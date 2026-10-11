@@ -60,3 +60,14 @@ To run the automated test suite:
 ```bash
 python3 -m pytest
 ```
+
+## AI Assistance Disclosure
+
+ChatGPT was used as an AI coding assistant during development to help
+review code, troubleshoot errors, improve tests, and refine documentation.
+The project author is responsible for reviewing, testing, and understanding
+the submitted implementation.
+
+The current application uses local Python logic for document retrieval,
+tutoring responses, quiz evaluation, and learner-progress tracking. It does
+not currently call a hosted generative-AI model API at runtime.

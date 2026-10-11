@@ -19,7 +19,7 @@ StudyBridge AI is designed for **Multimodal AI Hackathon 2026, Track D: Personal
 6. **Adaptive Learner Modeling (`app/learner_model.py`)**:
    - Tracks per-topic mastery probability across sessions, updating status (Proficient, Developing, Needs Review).
 7. **System Evaluation (`app/evaluation.py`)**:
-   - Evaluates retrieval precision, recall, answer relevance, and grounding accuracy against a test dataset.
+   - Runs a three-question tutoring benchmark that checks supported-response flags and expected phrases. This is a small implementation-specific benchmark, not a comprehensive measurement of retrieval precision, recall, or factual accuracy.
 8. **Automated Unit Tests (`tests/`)**:
    - Pytest test suites covering assessment evaluation, learner mastery updates, and grounding/retrieval accuracy.
 9. **Termux & Mobile Documentation (`README.md`, `docs/ARCHITECTURE.md`)**:
