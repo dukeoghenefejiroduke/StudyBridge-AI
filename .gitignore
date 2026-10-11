@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+data/uploads/*
+data/processed/documents.json
+data/processed/learner_progress.json
+data/test_processed/
