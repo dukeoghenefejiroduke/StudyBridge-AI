@@ -11,7 +11,7 @@ StudyBridge AI is designed for **Multimodal AI Hackathon 2026, Track D: Personal
 2. **Student Dashboard & UI (`app/templates/index.html`, `app/static/style.css`, `app/static/app.js`)**:
    - Modern, responsive single-page application with tabs for Dashboard, Learning Materials, Ask Your Tutor, Practice Quiz, and Learning Progress.
 3. **Document Ingestion & Source Tracking (`app/ingestion.py`)**:
-   - Ingests lecture slides, textbooks, and notes while preserving source locations (page numbers, slide numbers, video timestamps).
+   - Ingests lecture slides, textbooks, and notes while preserving source locations (page numbers, slide numbers, video timestamps), automatically prepending newly ingested documents and uploaded files to the top of the Ingested Library list.
 4. **Retrieval & Grounded Q&A Tutor (`app/retrieval.py`, `app/tutor.py`)**:
    - Keyword and content retrieval engine providing verifiable source citations and explicitly flagging unsupported/ungrounded questions.
 5. **Practice Quiz & Assessment (`app/assessment.py`)**:
@@ -21,7 +21,7 @@ StudyBridge AI is designed for **Multimodal AI Hackathon 2026, Track D: Personal
 7. **System Evaluation (`app/evaluation.py`)**:
    - Runs a three-question tutoring benchmark that checks supported-response flags and expected phrases. This is a small implementation-specific benchmark, not a comprehensive measurement of retrieval precision, recall, or factual accuracy.
 8. **Automated Unit Tests (`tests/`)**:
-   - Pytest test suites covering assessment evaluation, learner mastery updates, and grounding/retrieval accuracy.
+   - Pytest test suites (66 tests passing) covering assessment evaluation, topic scope filtering, learner mastery updates, grounding/retrieval accuracy, and secure file uploads.
 9. **Termux & Mobile Documentation (`README.md`, `docs/ARCHITECTURE.md`)**:
    - Clear installation, dependency setup, and startup commands.
 

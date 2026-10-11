@@ -178,10 +178,22 @@
                 <section id="quiz-section" class="tab-section">
                     <div class="card">
                         <h2>✍️ Practice Quiz & Assessment</h2>
-                        <p>Test your understanding with generated questions and receive evidence-based feedback.</p>
+                        <p>Select an available topic and start the quiz to test your understanding with adaptive questions and receive evidence-based feedback.</p>
+
+                        <div class="form-row" style="margin-bottom: 15px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="quiz-topic-select">Select Topic</label>
+                                <select id="quiz-topic-select" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                    <option value="">All Topics (Adaptive)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: flex-end;">
+                                <button type="button" class="primary-btn" onclick="loadQuizForSelectedTopic()">Start Quiz</button>
+                            </div>
+                        </div>
 
                         <div id="quiz-container">
-                            <button class="primary-btn" onclick="loadQuiz()">Load Quiz</button>
+                            <p>Select a topic above and click <strong>Start Quiz</strong> to begin.</p>
                         </div>
                     </div>
                 </section>

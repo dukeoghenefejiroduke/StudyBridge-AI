@@ -4,6 +4,7 @@ Unit tests for Assessment engine in StudyBridge AI.
 
 import pytest
 from app.assessment import AssessmentEngine
+from app.main import app
 
 def test_assessment_questions():
     engine = AssessmentEngine()
@@ -77,3 +78,54 @@ def test_all_quiz_questions_have_valid_mcq_type():
     for question in engine.get_questions():
         assert question["type"] == "mcq"
         assert len(question["options"]) == 4
+
+
+def test_api_quiz_get_endpoint():
+    app.config["TESTING"] = True
+    client = app.test_client()
+    res = client.get("/api/quiz")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "questions" in data
+    assert len(data["questions"]) == 3
+    for q in data["questions"]:
+        assert "correct_answer" not in q
+        assert "explanation" not in q
+
+
+def test_api_quiz_submit_endpoint_cases():
+    app.config["TESTING"] = True
+    client = app.test_client()
+
+    # 1. Malformed / non-dict body
+    res = client.post("/api/quiz/submit", json=["not", "a", "dict"])
+    assert res.status_code == 400
+
+    # 2. Missing answers dict
+    res = client.post("/api/quiz/submit", json={"not_answers": {}})
+    assert res.status_code == 400
+
+    # 3. Valid submission
+    res = client.post("/api/quiz/submit", json={"answers": {"q1": "B"}})
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "score" in data
+    assert "feedback" in data
+
+    # 4. Unknown question IDs and invalid answer choices
+    res = client.post("/api/quiz/submit", json={"answers": {"fake_id": "B", "q1": "INVALID"}})
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["score"] == 0
+
+
+def test_api_quiz_topics_endpoint():
+    app.config["TESTING"] = True
+    client = app.test_client()
+    res = client.get("/api/quiz/topics")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "topics" in data
+    assert len(data["topics"]) > 0
+    assert "Multimodal AI" in data["topics"]
+

@@ -10,3 +10,4 @@ data/uploads/*
 data/processed/documents.json
 data/processed/learner_progress.json
 data/test_processed/
+data/processed/assessment_history.json

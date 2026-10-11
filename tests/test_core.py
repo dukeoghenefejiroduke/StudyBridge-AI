@@ -34,6 +34,7 @@ class TestStudyBridgeCore(unittest.TestCase):
         self.assertEqual(doc["title"], "Test Doc")
         docs = self.ingestion.get_all_documents()
         self.assertTrue(len(docs) >= 4)
+        self.assertEqual(docs[0]["title"], "Test Doc")
 
     def test_retrieval(self):
         results = self.retrieval.search("multimodal ai")

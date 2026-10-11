@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupUploadForm();
     setupFileUploadForm();
     setupTutorForm();
+    loadQuizTopics();
 });
 
 function setupNavigation() {
@@ -39,6 +40,9 @@ function switchTab(targetId) {
 
     if (targetId === "progress-section") {
         loadProgress();
+    }
+    if (targetId === "quiz-section") {
+        loadQuizTopics();
     }
 }
 
@@ -220,13 +224,50 @@ function setupTutorForm() {
     });
 }
 
+async function loadQuizTopics() {
+    const select = document.getElementById("quiz-topic-select");
+    if (!select) return;
+    try {
+        const res = await fetch("/api/quiz/topics");
+        const data = await res.json();
+        if (data.topics) {
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">All Topics (Adaptive)</option>';
+            data.topics.forEach(topic => {
+                const opt = document.createElement("option");
+                opt.value = topic;
+                opt.textContent = topic;
+                if (topic === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+    } catch (e) {
+        console.error("Failed to load quiz topics", e);
+    }
+}
+
+async function loadQuizForSelectedTopic() {
+    const select = document.getElementById("quiz-topic-select");
+    const topic = select ? select.value : "";
+    const url = topic ? `/api/quiz?topic=${encodeURIComponent(topic)}` : "/api/quiz";
+    await loadQuizFromUrl(url);
+}
+
 async function loadQuiz() {
+    await loadQuizFromUrl("/api/quiz");
+}
+
+async function loadQuizFromUrl(url) {
     const container = document.getElementById("quiz-container");
     container.innerHTML = "<p>Loading quiz questions...</p>";
 
     try {
-        const res = await fetch("/api/quiz");
+        const res = await fetch(url);
         const data = await res.json();
+        if (data.error) {
+            container.innerHTML = `<p style="color: var(--danger);">${data.error}</p>`;
+            return;
+        }
 
         let html = `<form id="quiz-form" onsubmit="submitQuiz(event)">`;
         data.questions.forEach((q, idx) => {

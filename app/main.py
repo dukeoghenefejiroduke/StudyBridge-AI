@@ -79,9 +79,24 @@ def api_tutor():
     response = tutor_engine.answer_question(query)
     return jsonify(response)
 
+@app.route("/api/quiz/topics", methods=["GET"])
+def api_quiz_topics():
+    topics = sorted(list({q["topic"] for q in assessment_engine.questions}))
+    return jsonify({"topics": topics})
+
 @app.route("/api/quiz", methods=["GET"])
 def api_quiz_get():
-    return jsonify({"questions": assessment_engine.get_questions()})
+    topic_param = request.args.get("topic") or request.args.get("topics")
+    try:
+        questions = assessment_engine.select_questions(
+            progress=learner_model.get_progress(),
+            limit=3,
+            topic=topic_param
+        )
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    return jsonify({"questions": questions})
 
 @app.route("/api/quiz/submit", methods=["POST"])
 def api_quiz_submit():
@@ -103,6 +118,11 @@ def api_quiz_submit():
         results = assessment_engine.evaluate_quiz(answers)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
+
+    # Record only valid question IDs that were included in this submission.
+    assessment_engine.record_questions_seen(
+        [item["question_id"] for item in results["feedback"]]
+    )
 
     # Update each topic at most once per submission.
     updated_topics = set()

@@ -8,6 +8,7 @@ import os
 import json
 import io
 import uuid
+from werkzeug.utils import secure_filename
 
 class IngestionManager:
     def __init__(self, data_dir="data/processed"):
@@ -64,7 +65,7 @@ class IngestionManager:
             "timestamp": timestamp,
             "content": content
         }
-        self.documents.append(new_doc)
+        self.documents.insert(0, new_doc)
         self.save_documents()
         return new_doc
 
@@ -75,7 +76,8 @@ class IngestionManager:
         if not file_storage or not file_storage.filename:
             return {"success": False, "error": "No file provided"}, 400
 
-        filename = file_storage.filename
+        raw_filename = file_storage.filename
+        filename = secure_filename(raw_filename) or os.path.basename(raw_filename) or "file"
         ext = os.path.splitext(filename)[1].lower()
 
         if ext not in [".txt", ".md", ".pdf"]:
@@ -139,11 +141,13 @@ class IngestionManager:
                         "timestamp": timestamp,
                         "content": page_text.strip()
                     }
-                    self.documents.append(page_doc)
                     added_docs.append(page_doc)
 
             if total_text_length == 0:
                 return {"success": False, "error": "PDF contains no extractable text (it may be a scanned PDF or contain only images/diagrams, which are not supported for automated extraction)."}, 400
+
+            for page_doc in reversed(added_docs):
+                self.documents.insert(0, page_doc)
 
             self.save_documents()
             return {"success": True, "documents": added_docs, "count": len(added_docs)}, 200
