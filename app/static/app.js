@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("studybridge_dark_mode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
     setupNavigation();
     loadDashboardData();
     loadMaterials();
@@ -8,6 +11,43 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTutorForm();
     loadQuizTopics();
 });
+
+function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("studybridge_dark_mode", isDark ? "true" : "false");
+}
+
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+    } else {
+        alert("Text-to-speech not supported in this browser.");
+    }
+}
+
+function createSparkline(history) {
+    if (!history || history.length < 2) return '';
+    const width = 120;
+    const height = 30;
+    const min = 0;
+    const max = 1;
+    const points = history.map((val, idx) => {
+        const x = (idx / (history.length - 1)) * width;
+        const y = height - ((val - min) / (max - min)) * height;
+        return `${x},${y}`;
+    }).join(' ');
+    return `<div style="margin-top: 6px;"><small style="color: var(--text-muted);">Mastery Trend:</small><br><svg width="${width}" height="${height}" style="overflow: visible;">
+        <polyline fill="none" stroke="var(--primary)" stroke-width="2" points="${points}" />
+        ${history.map((val, idx) => {
+            const x = (idx / (history.length - 1)) * width;
+            const y = height - ((val - min) / (max - min)) * height;
+            return `<circle cx="${x}" cy="${y}" r="3" fill="var(--primary)" />`;
+        }).join('')}
+    </svg></div>`;
+}
 
 function setupNavigation() {
     const navButtons = document.querySelectorAll(".nav-btn");
@@ -207,6 +247,13 @@ function setupTutorForm() {
             const answerDiv = document.createElement("div");
             answerDiv.textContent = data.answer;
             tutorMsg.appendChild(answerDiv);
+
+            const listenBtn = document.createElement("button");
+            listenBtn.className = "secondary-btn";
+            listenBtn.style.cssText = "margin-top: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer;";
+            listenBtn.textContent = "🔊 Listen";
+            listenBtn.onclick = () => speakText(data.answer);
+            tutorMsg.appendChild(listenBtn);
 
             if (data.citations && data.citations.length > 0) {
                 const c = data.citations[0];
@@ -437,6 +484,13 @@ async function loadProgress() {
             sessions.textContent = `Sessions: ${info.sessions}`;
 
             card.append(heading, status, barBackground, sessions);
+
+            if (info.history && info.history.length > 1) {
+                const sparkDiv = document.createElement("div");
+                sparkDiv.innerHTML = createSparkline(info.history);
+                card.appendChild(sparkDiv);
+            }
+
             container.appendChild(card);
         }
 

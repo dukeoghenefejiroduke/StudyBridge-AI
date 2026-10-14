@@ -2,17 +2,17 @@
 
 **Multimodal AI Hackathon 2026 — Track D: Personalized Tutoring & Adaptive Learning**
 
-StudyBridge AI is a privacy-first, lightweight personalized tutoring and adaptive learning web application optimized for Android and Termux. It empowers students to ingest lecture materials, ask grounded questions with traceable citations, take practice quizzes, and track per-topic mastery across sessions.
+StudyBridge AI is a privacy-first, lightweight personalized tutoring and adaptive learning web application optimized for Android and Termux. It empowers students to ingest lecture materials (Text, Markdown, PDFs, and PowerPoint slides), ask grounded questions with traceable citations, take dynamic adaptive practice quizzes, listen to audio tutor explanations, and track per-topic mastery with historical sparklines across sessions.
 
 ---
 
 ## Features Implemented
-- **Study Dashboard:** Overview of ingested materials, average mastery, and grounding accuracy.
-- **Learning Materials Library:** Ingestion manager supporting file uploads (`.txt`, `.md`, `.pdf`) and text pasting, preserving source page numbers and metadata.
-- **Ask Your Tutor:** Grounded Q&A engine with traceable source citations and explicit handling of unsupported queries.
-- **Practice Quiz:** Interactive multiple-choice quiz with automated evaluation and evidence-based feedback.
-- **Learning Progress:** Real-time per-topic mastery tracking and evaluation metrics.
-- **Automated Tests:** Comprehensive test suite covering assessment, learner model, retrieval grounding, and file uploads.
+- **Study Dashboard:** Overview of ingested materials, average mastery, grounding accuracy, and dark/light theme toggle.
+- **Learning Materials Library:** Ingestion manager supporting file uploads (`.txt`, `.md`, `.pdf`, `.pptx`) and text pasting, preserving source page, slide numbers, and metadata.
+- **Ask Your Tutor:** Grounded Q&A engine with traceable source citations, explicit handling of unsupported queries, and Web Speech API text-to-speech audio read-aloud (`🔊 Listen`).
+- **Practice Quiz & Dynamic MCQ Generation:** Interactive multiple-choice quiz with automated evaluation, spaced repetition scheduling, and automatic MCQ generation from uploaded study materials.
+- **Learning Progress & Analytics:** Real-time per-topic mastery tracking, proficiency status, historical mastery trend sparklines, and weak-topic study recommendations.
+- **Automated Tests:** Comprehensive test suite covering assessment, learner model, history tracking, retrieval grounding, and secure file uploads (**69 tests passing**).
 
 ---
 
@@ -20,6 +20,7 @@ StudyBridge AI is a privacy-first, lightweight personalized tutoring and adaptiv
 - **Plain Text (`.txt`)**: UTF-8 decoded text documents.
 - **Markdown (`.md`)**: Structured markdown notes and documentation.
 - **PDF Documents (`.pdf`)**: Automatically parsed page-by-page using `pypdf`, creating searchable chunks with accurate page number citations.
+- **PowerPoint Presentations (`.pptx`)**: Automatically parsed slide-by-slide using native XML and archive inspection, creating slide citations without external binary dependencies.
 - **Upload Size Limit**: Maximum 5 MB per file.
 
 ---

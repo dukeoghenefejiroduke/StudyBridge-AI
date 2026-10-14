@@ -49,6 +49,7 @@ def api_materials():
         content = data.get("content", "")
 
         new_doc = ingestion_manager.add_document(title, doc_type, source, timestamp, content)
+        assessment_engine.generate_dynamic_question(new_doc)
         return jsonify({"success": True, "document": new_doc})
 
     return jsonify({"documents": ingestion_manager.get_all_documents()})
@@ -67,6 +68,12 @@ def api_materials_upload():
     result, status_code = ingestion_manager.process_file_upload(
         file_storage, title=title, doc_type=doc_type, source=source, timestamp=timestamp
     )
+    if status_code == 200:
+        if "document" in result:
+            assessment_engine.generate_dynamic_question(result["document"])
+        elif "documents" in result:
+            for doc in result["documents"][:3]:  # generate questions for up to 3 pages/slides
+                assessment_engine.generate_dynamic_question(doc)
     return jsonify(result), status_code
 
 @app.route("/api/tutor", methods=["POST"])

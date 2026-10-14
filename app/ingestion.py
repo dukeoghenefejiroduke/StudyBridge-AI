@@ -80,8 +80,8 @@ class IngestionManager:
         filename = secure_filename(raw_filename) or os.path.basename(raw_filename) or "file"
         ext = os.path.splitext(filename)[1].lower()
 
-        if ext not in [".txt", ".md", ".pdf"]:
-            return {"success": False, "error": "Unsupported file format. Please upload .txt, .md, or .pdf files."}, 400
+        if ext not in [".txt", ".md", ".pdf", ".pptx"]:
+            return {"success": False, "error": "Unsupported file format. Please upload .txt, .md, .pdf, or .pptx files."}, 400
 
         file_bytes = file_storage.read()
         if not file_bytes:
@@ -151,5 +151,55 @@ class IngestionManager:
 
             self.save_documents()
             return {"success": True, "documents": added_docs, "count": len(added_docs)}, 200
+
+        elif ext == ".pptx":
+            try:
+                import zipfile
+                import xml.etree.ElementTree as ET
+            except Exception as e:
+                return {"success": False, "error": f"Failed to import xml/zip modules: {str(e)}"}, 500
+
+            try:
+                with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
+                    slide_files = sorted([f for f in z.namelist() if f.startswith("ppt/slides/slide") and f.endswith(".xml")])
+                    if not slide_files:
+                        return {"success": False, "error": "PPTX contains no slide XML files."}, 400
+
+                    added_docs = []
+                    total_text_length = 0
+
+                    for idx, slide_file in enumerate(slide_files, start=1):
+                        xml_content = z.read(slide_file)
+                        root = ET.fromstring(xml_content)
+                        texts = []
+                        for elem in root.iter():
+                            if elem.tag.endswith('t') and elem.text:
+                                texts.append(elem.text)
+                        slide_text = " ".join(texts).strip()
+                        total_text_length += len(slide_text)
+
+                        if slide_text:
+                            slide_source = source if source and source.strip() else f"Slide {idx}"
+                            doc_id = f"doc_{uuid.uuid4().hex[:10]}"
+                            slide_doc = {
+                                "id": doc_id,
+                                "title": f"{doc_title} (Slide {idx})",
+                                "type": "slides",
+                                "source": slide_source,
+                                "timestamp": timestamp,
+                                "content": slide_text
+                            }
+                            added_docs.append(slide_doc)
+
+                    if total_text_length == 0:
+                        return {"success": False, "error": "PPTX contains no extractable text."}, 400
+
+                    for slide_doc in reversed(added_docs):
+                        self.documents.insert(0, slide_doc)
+
+                    self.save_documents()
+                    return {"success": True, "documents": added_docs, "count": len(added_docs)}, 200
+            except Exception as e:
+                return {"success": False, "error": f"Failed to parse PPTX file: {str(e)}"}, 400
 
         return {"success": False, "error": "Unsupported file format."}, 400

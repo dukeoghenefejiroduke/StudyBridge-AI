@@ -68,3 +68,16 @@ def test_malformed_progress_file_handled_safely(tmp_path):
     progress = model.get_progress()
     assert "Multimodal AI" in progress
 
+def test_learner_model_history_tracking(tmp_path):
+    model = LearnerModel(data_dir=str(tmp_path))
+    model.progress["Multimodal AI"] = {"mastery": 0.50, "sessions": 1, "status": "Developing", "history": [0.50]}
+    quiz_results = {
+        "feedback": [
+            {"topic": "Multimodal AI", "correct": True}
+        ]
+    }
+    updated = model.update_mastery("Multimodal AI", quiz_results)
+    assert "history" in updated
+    assert len(updated["history"]) >= 2
+
+

@@ -64,4 +64,4 @@
 5. **Ask Tutor (Unsupported)**: Ask an ungrounded or out-of-scope question, and verify honest refusal response.
 6. **Take Practice Quiz**: Navigate to **Practice Quiz** (optionally filtering by topic), answer questions, submit, and review score, feedback, and explanations.
 7. **Review Learning Progress**: Navigate to **Learning Progress** to inspect per-topic mastery scores, proficiency status, session counts, and weak-topic study recommendations.
-8. **Run Evaluation & Tests**: Execute `python3 -m pytest -q` to confirm all 66 automated tests pass successfully.
+8. **Run Evaluation & Tests**: Execute `python3 -m pytest -q` to confirm all 69 automated tests pass successfully.

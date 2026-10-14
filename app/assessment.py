@@ -10,6 +10,7 @@ can be grounded in actual uploaded course materials.
 
 import json
 import os
+import uuid
 
 
 class AssessmentEngine:
@@ -258,6 +259,42 @@ class AssessmentEngine:
                 "source_status": "unlinked"
             }
         ]
+
+    def generate_dynamic_question(self, doc):
+        """Generate a practice MCQ from an ingested document."""
+        content = doc.get("content", "").strip()
+        if not content:
+            return None
+
+        sentences = [s.strip() for s in content.replace("!", ".").replace("?", ".").split(".") if len(s.strip()) > 20]
+        if not sentences:
+            return None
+
+        sentence = sentences[0]
+        topic = doc.get("type", "Multimodal AI").title()
+        if topic not in ["Multimodal AI", "Learner Modeling", "Grounding & RAG"]:
+            topic = "Multimodal AI"
+
+        qid = f"dyn_{uuid.uuid4().hex[:8]}"
+        q = {
+            "id": qid,
+            "topic": topic,
+            "type": "mcq",
+            "difficulty": "medium",
+            "prompt": f"Based on '{doc.get('title', 'Study Material')}': Which statement best reflects the concept that '{sentence[:80]}...'?",
+            "options": [
+                f"A) {sentence}",
+                "B) It represents unrelated noise or outdated data.",
+                "C) It directly contradicts core curriculum.",
+                "D) It requires no validation or citation."
+            ],
+            "correct_answer": "A",
+            "explanation": f"Source document '{doc.get('title')}' establishes this exact concept.",
+            "source_reference": f"{doc.get('title')} ({doc.get('source', 'Uploaded Material')})",
+            "source_status": "linked"
+        }
+        self.questions.append(q)
+        return q
 
     def _load_history(self):
         try:

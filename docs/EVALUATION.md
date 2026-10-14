@@ -19,7 +19,7 @@ Run the test suite from the repository root:
 
     python3 -m pytest -q
 
-The latest recorded full-suite result is **66 passing tests**.
+The latest recorded full-suite result is **69 passing tests**.
 
 The tests cover:
 
