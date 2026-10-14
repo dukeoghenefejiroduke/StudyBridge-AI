@@ -32,9 +32,12 @@
         <main class="main-content">
             <header class="top-header">
                 <h1 id="page-title">Study Dashboard</h1>
-                <div class="user-profile">
-                    <span class="status-indicator online"></span>
-                    <span>Student Mode</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="secondary-btn" onclick="toggleTheme()" style="padding: 6px 12px; font-size: 0.85rem; cursor: pointer;">🌓 Theme</button>
+                    <div class="user-profile">
+                        <span class="status-indicator online"></span>
+                        <span>Student Mode</span>
+                    </div>
                 </div>
             </header>
 
@@ -77,13 +80,13 @@
                 <!-- Learning Materials Section -->
                 <section id="materials-section" class="tab-section">
                     <div class="card">
-                        <h2>📁 Upload File (.txt, .md, .pdf)</h2>
-                        <p>Select a file from your phone or computer. PDFs are automatically chunked by page.</p>
+                        <h2>📁 Upload File (.txt, .md, .pdf, .pptx)</h2>
+                        <p>Select a file from your phone or computer. PDFs and PowerPoint decks are automatically chunked by page/slide.</p>
 
                         <form id="file-upload-form" class="upload-form">
                             <div class="form-group">
-                                <label>Select File (TXT, MD, PDF - Max 5MB)</label>
-                                <input type="file" id="upload-file" accept=".txt,.md,.pdf" required>
+                                <label>Select File (TXT, MD, PDF, PPTX - Max 5MB)</label>
+                                <input type="file" id="upload-file" accept=".txt,.md,.pdf,.pptx" required>
                             </div>
                             <div class="form-group">
                                 <label>Document Title (Optional)</label>
